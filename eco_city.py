@@ -152,7 +152,7 @@ def fazer_descarte(estacao: str, cacamba:str, descarte:float):
         dados_cadastrais[estacao]['cacambas'][cacamba]['temperatura'] = dados_cadastrais[estacao]['cacambas'][cacamba]['volume_cacamba'] * 40 / 100
         if (f'dia {data_hora.day}') not in dados_cadastrais[estacao]['historico']:   #checando se dia já foi cadastrado no histórico
             dados_cadastrais[estacao]['historico'][f'dia {data_hora.day}'] = {}    #Se a checagem não for feita, o dicionário sempre vai sobrescrever
-        dados_cadastrais[estacao]['historico'][f'dia {data_hora.day}'][f'{data_hora.time()}'] = f'descartados {descarte}kg'
+        dados_cadastrais[estacao]['historico'][f'dia {data_hora.day}'][f'{data_hora.time()}'] = f'descartados {descarte}kg na caçamba {cacamba}'
     except KeyError:
         print('Estação não cadastrada! Escolha outra estação')
 
