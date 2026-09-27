@@ -76,6 +76,7 @@ def verificar_todas_estacoes():
             print(f"        .Capacidade máxima: {dados_cadastrais[i]['cacambas'][f'{j + 1}']['capacidade']}kg:")
             print(f"        .Volume atual: {dados_cadastrais[i]['cacambas'][f'{j + 1}']['volume_cacamba']}kg:")
             print(f"        .Temperatura: {dados_cadastrais[i]['cacambas'][f'{j + 1}']['temperatura']}º\n:")
+            print(f"        .Porcentagem: {dados_cadastrais[i]['cacambas'][f'{j+1}']['volume_cacamba'] / (dados_cadastrais[i]['cacambas'][f'{j + 1}']['capacidade']) * 100} %:")
 
     return 1
 
@@ -92,6 +93,7 @@ def verificar_estacao_especifica(estacao:str):
             print(f"        .Capacidade máxima: {dados_cadastrais[estacao]['cacambas'][f'{j + 1}']['capacidade']}kg:")
             print(f"        .Volume atual: {dados_cadastrais[estacao]['cacambas'][f'{j + 1}']['volume_cacamba']}kg:")
             print(f"        .Temperatura: {dados_cadastrais[estacao]['cacambas'][f'{j + 1}']['temperatura']}º\n:")
+            print(f"        .Porcentagem: {dados_cadastrais[estacao]['cacambas'][f'{j+1}']['volume_cacamba'] / (dados_cadastrais[estacao]['cacambas'][f'{j + 1}']['capacidade']) * 100} %:")
     except KeyError:
         print("Estação inválida. Tente novamente.")
     return 1
@@ -110,14 +112,30 @@ def creditos_carbono(estacao: str):
 
 #====================
 #Catarina
-def historico_dia():
-    return
+def historico_dia(estacao: str):
+    
+    return 1
 
 def historico_mes():
     return
 
-def porcentagem_cacamba():
-    return
+def porcentagem_cacamba(estacao:str):
+    try:
+        if estacao not in dados_cadastrais[estacao]['cacambas']:
+            for cacamba ,dicionario in dados_cadastrais[estacao]['cacambas'].items():
+                volume_ocu = dicionario ['volume_cacamba']
+                porcentagem = (dicionario ['volume_cacamba'] / 100 ) * 100
+                print(f"Cacamba {cacamba}: {porcentagem}% cheia")
+    except KeyError:
+        print('Estação não cadastrada! Escolha outra estação')
+    print(dados_cadastrais)
+    return 1
+
+    # escolher a estação
+    # enumerar a caçamba
+    # ver qual é o valume ocupado de cada caçamba por descarte
+    # e calcular a porcentagem da caçamba utilizando a capacidade máx 100
+ 
 
 #====================
 #Lucas
@@ -206,7 +224,7 @@ def main():
                     print("================")
                     print("Verificação de dados:")
 
-                    resposta = input("O que quer verificar?\n0. Sair\n1. Dados de todas as estações\n2. Dados de uma estação específica\n3. Créditos de carbono de uma estação\nR: ")
+                    resposta = input("O que quer verificar?\n0. Sair\n1. Dados de todas as estações\n2. Dados de uma estação específica\n3. Créditos de carbono de uma estação\n4. Porcentagem\nR: ")
                     print("================")
 
                     match resposta:
@@ -228,6 +246,14 @@ def main():
                             if creditos_carbono(estacao) == 1:
                                 break
                             if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
+                                print("================")
+                                break
+                        case "4":
+                            estacao = input('Qual estação você quer verificar?\nR: ')
+
+                            if porcentagem_cacamba(estacao) == 1:
+                                break
+                            if input("Tentar novamente? \n1. Sim\n2. Não\nR: ") == "2":
                                 print("================")
                                 break
 
