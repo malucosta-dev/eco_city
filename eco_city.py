@@ -4,7 +4,7 @@ dados_cadastrais = {
 }
 
 def cadastrar(estacao: str, codigo: str, bairro: str, volume: float):
-    erro = False #Sempre que acontecer um erro, a variável "erro" é alterada para True, permitindo que todas as mensagens de erro aconteçam
+    erro = 1 #Sempre que acontecer um erro, a variável "erro" é alterada para True, permitindo que todas as mensagens de erro aconteçam
 
     for i in dados_cadastrais.keys(): #checando se alguma key já foi cadastrada
         if i == estacao:
@@ -12,40 +12,35 @@ def cadastrar(estacao: str, codigo: str, bairro: str, volume: float):
             return 0 #Caso já tenha um cadastro de mesmo nome, o return impede que ele seja modificado posteriormente
     
     if len(codigo) != 5: #Verificando regras de negócio
-        erro = True 
+        erro = 0 
         print("Código inválido. É preciso, exatamente, 5 números.")
 
     if codigo.isnumeric() == False: #Verificando se input é um número
-        erro = True
+        erro = 0
         print("Código inválido. Por favor, digite um número.")
 
     if codigo == "":
-        erro = True
+        erro = 0
         print("Código inválido. Por favor, digite um número.")
 
     if type(bairro) != str:  #Verificando se input é uma str
-        erro = True
+        erro = 0
         print("Bairro inválido. Por favor, digite uma palavra.")
 
     if bairro == "":
-            erro = True
+            erro = 0
             print("Bairro inválido. Por favor, digite um bairro.")
 
     try:
         volume = float(volume)
         if volume < 0: #Verificando se o input é negativo
-            erro = True
+            erro = 0
             print("Volume inválido. Por favor, digite uma número maior que zero.")
-        if volume > 400: #Verificando limite de volume de descarte
-            erro = True
-            print(f"Limite de volume de descarte atingido, valor máximo permitido: 300kg.")
     except ValueError:
-        erro = True
+        erro = 0
         print("Volume inválido. Por favor, digite uma número inteiro ou decimal.")
 
-    erro = verificar_volume(volume)
-
-    if erro == True:
+    if erro == 0:
         return 0
 
     dados_cadastrais[estacao] = {}
@@ -58,9 +53,15 @@ def cadastrar(estacao: str, codigo: str, bairro: str, volume: float):
         dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['capacidade'] = 100
         dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['volume_cacamba'] = 0
         dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['temperatura'] = 0
-        dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['porcentagem'] = dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['capacidade']*(dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['volume_cacamba'])/100
-    dados_cadastrais[estacao]['cacambas']['1']['volume_cacamba'] = volume 
+        dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['porcentagem'] = dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['capacidade'] * dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['volume_cacamba'] / 100
+    dados_cadastrais[estacao]['cacambas']['1']['volume_cacamba'] = volume
+    dados_cadastrais[estacao]['cacambas']['1']['porcentagem'] = dados_cadastrais[estacao]['cacambas']['1']['capacidade'] * dados_cadastrais[estacao]['cacambas']['1']['volume_cacamba'] / 100
     dados_cadastrais[estacao]['historico'] = {}
+
+    if verificar_volume(estacao, "1") == 0:
+        print("Volume de descarte excedido. Estação não cadastrada.")
+        del dados_cadastrais[estacao]
+        return 0
 
     return 1 #Toda função retorna 1. Isso acontece para verificar se a função ocorreu ou não. Se não retornar 1, isso significa que a função não chegou ao final
 
@@ -121,23 +122,6 @@ def historico_mes():
     
     return 1
 
-def porcentagem_cacamba(estacao:str):
-    try:
-        if estacao not in dados_cadastrais[estacao]['cacambas']:
-            for cacamba ,dicionario in dados_cadastrais[estacao]['cacambas'].items():
-                volume_ocu = dicionario ['volume_cacamba']
-                porcentagem = (dicionario ['volume_cacamba'] / 100 ) * 100
-                print(f"Cacamba {cacamba}: {porcentagem}% cheia")
-    except KeyError:
-        print('Estação não cadastrada! Escolha outra estação')
-    print(dados_cadastrais)
-    return 1
-
-    # escolher a estação
-    # enumerar a caçamba
-    # ver qual é o valume ocupado de cada caçamba por descarte
-    # e calcular a porcentagem da caçamba utilizando a capacidade máx 100
- 
 #====================
 #Lucas
 def fazer_descarte(estacao: str, cacamba:str, descarte:float):
@@ -175,31 +159,35 @@ def fazer_descarte(estacao: str, cacamba:str, descarte:float):
     except KeyError:
         print('Estação não cadastrada! Escolha outra estação')
 
-    print(dados_cadastrais)
-
     return 1
 
 #====================
 #Luiza
-def volume_cacambas(estacao:str):
+def verificar_volume(estacao:str, cacamba:str):
     try:
-        if dados_cadastrais <= 30:
-            print("Volume de ocupação da caçamba: Baixo")
-        elif porcentagem_cacamba >30 and porcentagem_cacamba <=60:
-            print("Volume de ocupação da caçamba: Moderado")
-        elif porcentagem_cacamba >60 and porcentagem_cacamba <= 90:
-            print("Volume de ocupação da caçamba: Alto")
+
+        porcentagem = dados_cadastrais[estacao]['cacambas'][cacamba]['porcentagem']
+
+        if porcentagem >=0 and porcentagem <30:
+            pass
+        elif porcentagem >30 and porcentagem <=60:
+            print(f"Volume de ocupação da caçamba {cacamba}: Moderado")
+        elif porcentagem >60 and porcentagem <= 90:
+            print(f"Volume de ocupação da caçamba {cacamba}: Alto")
         else:
-            print(f"Atenção: Volume da caçamba perigosamente alto. Restringir descarte.")
+            print(f"Atenção: Volume da caçamba {cacamba} perigosamente alto.")
+            return 0
     except KeyError:
-        return 1
+        print("Estação ou caçamba inválida! Tente novamente.")
+        return 0 
+    return 1
 
 #====================
 
 def main():
     while True:
         print("Sistema EcoCity:")
-        resposta = input("O que você quer fazer?\n0. Sair\n1. Cadastrar estação\n2. Verificar dados\n3. Cadastrar descarte\nR: ")
+        resposta = input("O que você quer fazer?\n0. Parar\n1. Cadastrar estação\n2. Verificar dados\n3. Cadastrar descarte\nR: ")
         match resposta:
             case "0":
                 return
@@ -226,7 +214,7 @@ def main():
                     print("================")
                     print("Verificação de dados:")
 
-                    resposta = input("O que quer verificar?\n0. Sair\n1. Dados de todas as estações\n2. Dados de uma estação específica\n3. Créditos de carbono de uma estação\n4. Porcentagem\nR: ")
+                    resposta = input("O que quer verificar?\n0. Sair\n1. Dados de todas as estações\n2. Dados de uma estação específica\n3. Créditos de carbono de uma estação\nR: ")
                     print("================")
 
                     match resposta:
@@ -248,14 +236,6 @@ def main():
                             if creditos_carbono(estacao) == 1:
                                 break
                             if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
-                                print("================")
-                                break
-                        case "4":
-                            estacao = input('Qual estação você quer verificar?\nR: ')
-
-                            if porcentagem_cacamba(estacao) == 1:
-                                break
-                            if input("Tentar novamente? \n1. Sim\n2. Não\nR: ") == "2":
                                 print("================")
                                 break
 
