@@ -58,7 +58,8 @@ def cadastrar(estacao: str, codigo: str, bairro: str, volume: float):
         dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['capacidade'] = 100
         dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['volume_cacamba'] = 0
         dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['temperatura'] = 0
-    dados_cadastrais[estacao]['cacambas']['1']['volume_cacamba'] = volume
+        dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['porcentagem'] = dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['capacidade']*(dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['volume_cacamba'])/100
+    dados_cadastrais[estacao]['cacambas']['1']['volume_cacamba'] = volume 
     dados_cadastrais[estacao]['historico'] = {}
 
     return 1 #Toda função retorna 1. Isso acontece para verificar se a função ocorreu ou não. Se não retornar 1, isso significa que a função não chegou ao final
@@ -182,7 +183,7 @@ def fazer_descarte(estacao: str, cacamba:str, descarte:float):
 #Luiza
 def volume_cacambas(estacao:str):
     try:
-        if porcentagem_cacamba <= 30:
+        if dados_cadastrais <= 30:
             print("Volume de ocupação da caçamba: Baixo")
         elif porcentagem_cacamba >30 and porcentagem_cacamba <=60:
             print("Volume de ocupação da caçamba: Moderado")
