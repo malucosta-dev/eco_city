@@ -205,7 +205,7 @@ def main():
                     print("================")
                     print("Verificação de dados:")
 
-                    resposta = input("O que quer verificar?\n0. Sair\n1. Dados de todas as estações\n2. Dados de uma estação específica\n3. Créditos de carbono de uma estação\n4. Porcentagem\nR: ")
+                    resposta = input("O que quer verificar?\n0. Sair\n1. Dados de todas as estações\n2. Dados de uma estação específica\n3. Créditos de carbono de uma estação\nR: ")
                     print("================")
 
                     match resposta:
@@ -227,14 +227,6 @@ def main():
                             if creditos_carbono(estacao) == 1:
                                 break
                             if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
-                                print("================")
-                                break
-                        case "4":
-                            estacao = input('Qual estação você quer verificar?\nR: ')
-
-                            if porcentagem_cacamba(estacao) == 1:
-                                break
-                            if input("Tentar novamente? \n1. Sim\n2. Não\nR: ") == "2":
                                 print("================")
                                 break
 
