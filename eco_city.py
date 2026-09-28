@@ -58,6 +58,7 @@ def cadastrar(estacao: str, codigo: str, bairro: str, volume: float):
         dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['capacidade'] = 100
         dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['volume_cacamba'] = 0
         dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['temperatura'] = 0
+        dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['porcentagem'] = dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['capacidade'] * dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['volume_cacamba'] / 100
     dados_cadastrais[estacao]['cacambas']['1']['volume_cacamba'] = volume
     dados_cadastrais[estacao]['historico'] = {}
 
@@ -119,24 +120,6 @@ def historico_dia(estacao: str):
 def historico_mes():
     return
 
-def porcentagem_cacamba(estacao:str):
-    try:
-        if estacao not in dados_cadastrais[estacao]['cacambas']:
-            for cacamba ,dicionario in dados_cadastrais[estacao]['cacambas'].items():
-                volume_ocu = dicionario ['volume_cacamba']
-                porcentagem = (dicionario ['volume_cacamba'] / 100 ) * 100
-                print(f"Cacamba {cacamba}: {porcentagem}% cheia")
-    except KeyError:
-        print('Estação não cadastrada! Escolha outra estação')
-    print(dados_cadastrais)
-    return 1
-
-    # escolher a estação
-    # enumerar a caçamba
-    # ver qual é o valume ocupado de cada caçamba por descarte
-    # e calcular a porcentagem da caçamba utilizando a capacidade máx 100
- 
-
 #====================
 #Lucas
 def fazer_descarte(estacao: str, cacamba:str, descarte:float):
@@ -174,8 +157,6 @@ def fazer_descarte(estacao: str, cacamba:str, descarte:float):
     except KeyError:
         print('Estação não cadastrada! Escolha outra estação')
 
-    print(dados_cadastrais)
-
     return 1
 
 #====================
@@ -197,7 +178,7 @@ def tabela():
 def main():
     while True:
         print("Sistema EcoCity:")
-        resposta = input("O que você quer fazer?\n0. Sair\n1. Cadastrar estação\n2. Verificar dados\n3. Cadastrar descarte\nR: ")
+        resposta = input("O que você quer fazer?\n0. Parar\n1. Cadastrar estação\n2. Verificar dados\n3. Cadastrar descarte\nR: ")
         match resposta:
             case "0":
                 return
