@@ -117,7 +117,8 @@ def historico_dia(estacao: str):
     return 1
 
 def historico_mes():
-    return
+    
+    return 1
 
 def porcentagem_cacamba(estacao:str):
     try:
@@ -136,7 +137,6 @@ def porcentagem_cacamba(estacao:str):
     # ver qual é o valume ocupado de cada caçamba por descarte
     # e calcular a porcentagem da caçamba utilizando a capacidade máx 100
  
-
 #====================
 #Lucas
 def fazer_descarte(estacao: str, cacamba:str, descarte:float):
@@ -180,17 +180,18 @@ def fazer_descarte(estacao: str, cacamba:str, descarte:float):
 
 #====================
 #Luiza
-def verificar_volume(volume: float):
-    if volume < 0:
-        return True
-
-    return False
-
-def indice():
-    return
-
-def tabela():
-    return
+def volume_cacambas(estacao:str):
+    try:
+        if porcentagem_cacamba <= 30:
+            print("Volume de ocupação da caçamba: Baixo")
+        elif porcentagem_cacamba >30 and porcentagem_cacamba <=60:
+            print("Volume de ocupação da caçamba: Moderado")
+        elif porcentagem_cacamba >60 and porcentagem_cacamba <= 90:
+            print("Volume de ocupação da caçamba: Alto")
+        else:
+            print(f"Atenção: Volume da caçamba perigosamente alto. Restringir descarte.")
+    except KeyError:
+        return 1
 
 #====================
 
