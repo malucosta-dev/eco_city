@@ -113,12 +113,67 @@ def creditos_carbono(estacao: str):
 
 #====================
 #Catarina
-def historico_dia(estacao: str):
-    
+def historico_dia(estacao: str, dia:str, mes:str):
+    if estacao not in dados_cadastrais:
+        print("Estação não cadastrada!")
+        return 0
+
+    if dia.isnumeric() == False:
+        print("Dia inválido! Digite um número.")
+        return 0
+
+    if mes.isnumeric() == False:
+        print("Mês inválido! Digite um número.")
+        return 0
+
+    if f'{dia}/{mes}' not in dados_cadastrais[estacao]['historico'].keys():
+        print(f"Nenhum dado encontrado para o dia {dia}/{mes}.")
+        return 0
+
+    print(f"Histórico do dia {dia}/{mes} da estação {estacao}")
+    for hora, descarte in dados_cadastrais[estacao]['historico'][f'{dia}/{mes}'].items():
+        print(f"{hora[0:5]}: {descarte}")
+
     return 1
 
-def historico_mes():
-    return
+def historico_mes(estacao: str, mes:str):
+    if estacao not in dados_cadastrais:
+        print("Estação não cadastrada!")
+        return 0
+
+    if mes.isnumeric() == False:
+        print("Mês inválido! Digite um número.")
+        return 0
+
+
+    print(f"Histórico do mês da estação {estacao}")
+    for diames in dados_cadastrais[estacao]['historico'].keys():
+
+        dia, mes_historico = diames.split("/")
+
+        if mes_historico == mes:
+            for hora, descarte in dados_cadastrais[estacao]['historico'][diames].items():
+                print(f"{hora[0:5]}: {descarte}")
+        else:
+            print(f"Nenhum histórico para o mês {mes}.")
+
+    return 1
+
+def historico_ultimos_10(estacao: str):
+    if estacao not in dados_cadastrais:
+        print("Estação não cadastrada!")
+        return 0
+
+    if len(dados_cadastrais[estacao]['historico']) == 0:
+        print("Nenhum descarte feito")
+        return 0
+
+    print(f"Histórico dos últimos 10 dias da estação {estacao}")
+    for dia in dados_cadastrais[estacao]['historico'].keys():
+        for hora, descarte in dados_cadastrais[estacao]['historico'][dia].items():
+            print(f"{dia}: {descarte} às {hora[0:5]}")
+
+    return 1
 
 #====================
 #Lucas
@@ -151,9 +206,9 @@ def fazer_descarte(estacao: str, cacamba:str, descarte:float):
         dados_cadastrais[estacao]['volume'] = dados_cadastrais[estacao]['volume'] + descarte
         dados_cadastrais[estacao]['cacambas'][cacamba]['volume_cacamba'] = dados_cadastrais[estacao]['cacambas'][cacamba]['volume_cacamba'] + descarte
         dados_cadastrais[estacao]['cacambas'][cacamba]['temperatura'] = dados_cadastrais[estacao]['cacambas'][cacamba]['volume_cacamba'] * 40 / 100
-        if (f'dia {data_hora.day}') not in dados_cadastrais[estacao]['historico']:   #checando se dia já foi cadastrado no histórico
-            dados_cadastrais[estacao]['historico'][f'dia {data_hora.day}'] = {}    #Se a checagem não for feita, o dicionário sempre vai sobrescrever
-        dados_cadastrais[estacao]['historico'][f'dia {data_hora.day}'][f'{data_hora.time()}'] = f'descartados {descarte}kg na caçamba {cacamba}'
+        if (f'{data_hora.day}/{data_hora.month}') not in dados_cadastrais[estacao]['historico']:   #checando se dia já foi cadastrado no histórico
+            dados_cadastrais[estacao]['historico'][f'{data_hora.day}/{data_hora.month}'] = {}    #Se a checagem não for feita, o dicionário sempre vai sobrescrever
+        dados_cadastrais[estacao]['historico'][f'{data_hora.day}/{data_hora.month}'][f'{data_hora.time()}'] = f'{descarte}kg na caçamba {cacamba}'
     except KeyError:
         print('Estação não cadastrada! Escolha outra estação')
 
@@ -205,7 +260,7 @@ def main():
                     print("================")
                     print("Verificação de dados:")
 
-                    resposta = input("O que quer verificar?\n0. Sair\n1. Dados de todas as estações\n2. Dados de uma estação específica\n3. Créditos de carbono de uma estação\nR: ")
+                    resposta = input("O que quer verificar?\n0. Sair\n1. Dados de todas as estações\n2. Dados de uma estação específica\n3. Créditos de carbono de uma estação\n4. Histórico dos últimos 10 descartes\nR: ")
                     print("================")
 
                     match resposta:
@@ -230,6 +285,15 @@ def main():
                                 print("================")
                                 break
 
+                        case "4":
+                            estacao = input('Qual estação você quer verificar?\nR: ')
+                
+                            if historico_ultimos_10(estacao) == 1:
+                                break
+                            if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
+                                print("================")
+                                break
+
             case "3":
                 while True:
                     print("================")
@@ -240,10 +304,49 @@ def main():
                     descarte = input("Qual o peso do material descartado?\nR:")
 
                     if fazer_descarte(estacao, cacamba, descarte) == 1:
-                        print("Estação cadastrada com sucesso!\n================")
+                        print("Descarte feito com sucesso!\n================")
                         break
                     if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
                         print("================")
                         break
+
+            case "4":
+                while True:
+                    print("================")
+                    print("Verificação de dados:")
+
+                    resposta = input("O que quer verificar?\n0. Sair\n1. Histórico dos últimos 10 dias\n2. Histórico de um dia especifico\n3. Histórico de um mês específico\nR: ")
+                    print("================")
+
+                    match resposta:
+                        case "0":
+                            break
+                        case "1":
+                            estacao = input('Qual estação você quer verificar?\nR: ')
+                            if historico_ultimos_10(estacao) == 1:
+                                break
+                            if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
+                                print("================")
+                                break
+                            
+                        case "2":
+                            estacao = input('Qual estação você quer verificar?\nR: ')
+                            dia = input('Em qual dia aconteceu o descarte?\nR: ')
+                            mes = input('Em qual mes aconteceu o descarte?\nR: ')
+
+                            if historico_dia(estacao, dia, mes) == 1:
+                                break
+                            if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
+                                print("================")
+                                break
+                        case "3":
+                            estacao = input('Qual estação você quer verificar?\nR: ')
+                            mes = input('Em qual mês aconteceu o descarte?\nR: ')
+
+                            if historico_mes(estacao, mes) == 1:
+                                break
+                            if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
+                                print("================")
+                                break
 
 main()
