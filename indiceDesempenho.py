@@ -5,12 +5,17 @@ de 0 a 25%= Regular
 de 26% a 50%= Bom
 de 51% a 75%= Muito bom
 de 76% a 100%= Ótimo
+
+        indicador = dados_cadastrais[estacao]['volume']
+       
+        if indicador >=0 and indicador <30:
+            desempenho= "Regular"
+        elif indicador >30 and indicador <=60:
+            desempenho= "Bom"
+        elif indicador >60 and indicador <= 90:
+            desempenho= "Muito bom"
+        else:
+            print(f"Volume de descarte inválido.")
+            return 0
+
 """
-
-Consultar desempenho de estação específica
-
-print("Indice por categoria: 1.Regular 2.Bom 3.Muito bom 4.Ótimo")
-
-input("Selecione a categoria a ser consultada: ")
-
-  if

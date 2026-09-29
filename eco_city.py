@@ -43,7 +43,7 @@ def cadastrar(estacao: str, codigo: str, bairro: str, volume: float):
     if erro == 0:
         return 0
 
-    dados_cadastrais[estacao] = {}
+    dados_cadastrais[estacao] = {} #Fiz uma função para a porcentagem, então removi o cálculo de dentro dos dados cadastrais -Malu
     dados_cadastrais[estacao]['codigo'] = codigo
     dados_cadastrais[estacao]['bairro'] = bairro
     dados_cadastrais[estacao]['volume'] = volume
@@ -53,9 +53,7 @@ def cadastrar(estacao: str, codigo: str, bairro: str, volume: float):
         dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['capacidade'] = 100
         dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['volume_cacamba'] = 0
         dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['temperatura'] = 0
-        dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['porcentagem'] = dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['capacidade'] * dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['volume_cacamba'] / 100
     dados_cadastrais[estacao]['cacambas']['1']['volume_cacamba'] = volume
-    dados_cadastrais[estacao]['cacambas']['1']['porcentagem'] = dados_cadastrais[estacao]['cacambas']['1']['capacidade'] * dados_cadastrais[estacao]['cacambas']['1']['volume_cacamba'] / 100
     dados_cadastrais[estacao]['historico'] = {}
 
     if verificar_volume(estacao, "1") == 0:
@@ -78,7 +76,7 @@ def verificar_todas_estacoes():
             print(f"        .Capacidade máxima: {dados_cadastrais[i]['cacambas'][f'{j + 1}']['capacidade']}kg:")
             print(f"        .Volume atual: {dados_cadastrais[i]['cacambas'][f'{j + 1}']['volume_cacamba']}kg:")
             print(f"        .Temperatura: {dados_cadastrais[i]['cacambas'][f'{j + 1}']['temperatura']}º\n:")
-            print(f"        .Porcentagem: {dados_cadastrais[i]['cacambas'][f'{j+1}']['volume_cacamba'] / (dados_cadastrais[i]['cacambas'][f'{j + 1}']['capacidade']) * 100} %:")
+            verificar_volume(i, f'{j+1}')
 
     return 1
 
@@ -95,7 +93,7 @@ def verificar_estacao_especifica(estacao:str):
             print(f"        .Capacidade máxima: {dados_cadastrais[estacao]['cacambas'][f'{j + 1}']['capacidade']}kg:")
             print(f"        .Volume atual: {dados_cadastrais[estacao]['cacambas'][f'{j + 1}']['volume_cacamba']}kg:")
             print(f"        .Temperatura: {dados_cadastrais[estacao]['cacambas'][f'{j + 1}']['temperatura']}º\n:")
-            print(f"        .Porcentagem: {dados_cadastrais[estacao]['cacambas'][f'{j+1}']['volume_cacamba'] / (dados_cadastrais[estacao]['cacambas'][f'{j + 1}']['capacidade']) * 100} %:")
+            verificar_volume(estacao, f'{j+1}')
     except KeyError:
         print("Estação inválida. Tente novamente.")
     return 1
@@ -153,6 +151,7 @@ def fazer_descarte(estacao: str, cacamba:str, descarte:float):
         dados_cadastrais[estacao]['volume'] = dados_cadastrais[estacao]['volume'] + descarte
         dados_cadastrais[estacao]['cacambas'][cacamba]['volume_cacamba'] = dados_cadastrais[estacao]['cacambas'][cacamba]['volume_cacamba'] + descarte
         dados_cadastrais[estacao]['cacambas'][cacamba]['temperatura'] = dados_cadastrais[estacao]['cacambas'][cacamba]['volume_cacamba'] * 40 / 100
+        verificar_volume(estacao, cacamba)  #Verifica o volume de aacordo com a nova porcentagem
         if (f'dia {data_hora.day}') not in dados_cadastrais[estacao]['historico']:   #checando se dia já foi cadastrado no histórico
             dados_cadastrais[estacao]['historico'][f'dia {data_hora.day}'] = {}    #Se a checagem não for feita, o dicionário sempre vai sobrescrever
         dados_cadastrais[estacao]['historico'][f'dia {data_hora.day}'][f'{data_hora.time()}'] = f'descartados {descarte}kg na caçamba {cacamba}'
@@ -163,13 +162,23 @@ def fazer_descarte(estacao: str, cacamba:str, descarte:float):
 
 #====================
 #Luiza
+
+def calcular_porcentagem(estacao:str, cacamba:str):
+   
+        capacidade = dados_cadastrais[estacao]['cacambas'][cacamba]['capacidade']
+        volume_cacamba = dados_cadastrais[estacao]['cacambas'][cacamba]['volume_cacamba']
+
+        porcentagem = volume_cacamba/capacidade*100
+    
+        return porcentagem 
+
 def verificar_volume(estacao:str, cacamba:str):
     try:
 
-        porcentagem = dados_cadastrais[estacao]['cacambas'][cacamba]['porcentagem']
+        porcentagem = calcular_porcentagem(estacao, cacamba)
 
         if porcentagem >=0 and porcentagem <30:
-            pass
+            print(f"Volume de ocupação da caçamba {cacamba}: Baixo")
         elif porcentagem >30 and porcentagem <=60:
             print(f"Volume de ocupação da caçamba {cacamba}: Moderado")
         elif porcentagem >60 and porcentagem <= 90:
@@ -177,28 +186,33 @@ def verificar_volume(estacao:str, cacamba:str):
         else:
             print(f"Atenção: Volume da caçamba {cacamba} perigosamente alto.")
             return 0
+        
     except KeyError:
         print("Estação ou caçamba inválida! Tente novamente.")
         return 0 
+    
     return 1
 
 def indicador_desempenho(estacao:str):
-    try:
-
+  
+    try: 
         indicador = dados_cadastrais[estacao]['volume']
-
+                
         if indicador >=0 and indicador <30:
-            pass
+            print(f"Desempenho da estação {estacao}: Regular")
         elif indicador >30 and indicador <=60:
-            print(f"Indicador de desempenho da estação {estacao}: ")
+            print(f"Desempenho da estação {estacao}: Bom")
         elif indicador >60 and indicador <= 90:
-            print(f"Volume de ocupação da estação {estacao}: Alto")
+            print(f"Desempenho da estação {estacao}: Muito bom")
         else:
-            print(f"Atenção: Volume da estação {estacao} perigosamente alto.")
-            return 0
+            print(f"Volume de descarte inválido.")
+            return 0 
+
+        
     except KeyError:
         print("Estação inválida! Tente novamente.")
         return 0 
+    
     return 1
 
 
@@ -234,7 +248,7 @@ def main():
                     print("================")
                     print("Verificação de dados:")
 
-                    resposta = input("O que quer verificar?\n0. Sair\n1. Dados de todas as estações\n2. Dados de uma estação específica\n3. Créditos de carbono de uma estação\nR: ")
+                    resposta = input("O que quer verificar?\n0. Sair\n1. Dados de todas as estações\n2. Dados de uma estação específica\n3. Créditos de carbono de uma estação\n4. Estações por índice de desempenho\nR: ") #Adicionei o filtro do índice -Malu
                     print("================")
 
                     match resposta:
@@ -258,6 +272,8 @@ def main():
                             if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
                                 print("================")
                                 break
+                        case "4": #Case 4 para filtro do índice -Malu
+                            indicador_desempenho(estacao) 
 
             case "3":
                 while True:
