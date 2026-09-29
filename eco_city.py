@@ -182,6 +182,26 @@ def verificar_volume(estacao:str, cacamba:str):
         return 0 
     return 1
 
+def indicador_desempenho(estacao:str):
+    try:
+
+        indicador = dados_cadastrais[estacao]['volume']
+
+        if indicador >=0 and indicador <30:
+            pass
+        elif indicador >30 and indicador <=60:
+            print(f"Indicador de desempenho da estação {estacao}: ")
+        elif indicador >60 and indicador <= 90:
+            print(f"Volume de ocupação da estação {estacao}: Alto")
+        else:
+            print(f"Atenção: Volume da estação {estacao} perigosamente alto.")
+            return 0
+    except KeyError:
+        print("Estação inválida! Tente novamente.")
+        return 0 
+    return 1
+
+
 #====================
 
 def main():
