@@ -46,20 +46,19 @@ def cadastrar(estacao: str, codigo: str, bairro: str, volume: float):
     dados_cadastrais[estacao] = {} 
     dados_cadastrais[estacao]['codigo'] = codigo
     dados_cadastrais[estacao]['bairro'] = bairro
-    dados_cadastrais[estacao]['volume'] = volume
+    dados_cadastrais[estacao]['volume'] = 0        #volume inicial é sempre 0
     dados_cadastrais[estacao]['cacambas'] = {}
     for i in range(4):
         dados_cadastrais[estacao]['cacambas'][f'{i + 1}'] = {}
         dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['capacidade'] = 100
         dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['volume_cacamba'] = 0
         dados_cadastrais[estacao]['cacambas'][f'{i + 1}']['temperatura'] = 0
-    dados_cadastrais[estacao]['cacambas']['1']['volume_cacamba'] = volume
     dados_cadastrais[estacao]['historico'] = {}
-
-    if verificar_volume(estacao, "1") == 0:
-        print("Volume de descarte excedido. Estação não cadastrada.")
-        del dados_cadastrais[estacao]
-        return 0
+    if volume != 0:
+        if fazer_descarte(estacao, '1', volume) == 0:
+            print('Estação não cadastrada\n')
+            del dados_cadastrais[estacao]
+            return 0
 
     return 1 #Toda função retorna 1. Isso acontece para verificar se a função ocorreu ou não. Se não retornar 1, isso significa que a função não chegou ao final
 
@@ -76,7 +75,8 @@ def verificar_todas_estacoes(): #Adicionar exemplos
             print(f"        .Capacidade máxima: {dados_cadastrais[i]['cacambas'][f'{j + 1}']['capacidade']}kg:")
             print(f"        .Volume atual: {dados_cadastrais[i]['cacambas'][f'{j + 1}']['volume_cacamba']}kg:")
             print(f"        .Temperatura: {dados_cadastrais[i]['cacambas'][f'{j + 1}']['temperatura']}º")
-            verificar_volume(i, f'{j+1}')
+            {verificar_volume(i, f'{j+1}')}
+            print("")
     return 1
 
 def verificar_estacao_especifica(estacao:str):
@@ -187,6 +187,10 @@ def fazer_descarte(estacao: str, cacamba:str, descarte:float):
         print("Peso do material descartado inválido! Por favor, digite um número maior que 0.")
         return 0
 
+    if descarte == 0:
+        print("Volume de descarte inválido. Você não pode registrar um descarte com volume 0")
+        return 0
+
     if type(estacao) != str or estacao == "":
         print('Estação inválida. Por favor, digite uma palavra.')
         return 0
@@ -204,10 +208,10 @@ def fazer_descarte(estacao: str, cacamba:str, descarte:float):
     try:
         dados_cadastrais[estacao]['volume'] = dados_cadastrais[estacao]['volume'] + descarte
         dados_cadastrais[estacao]['cacambas'][cacamba]['volume_cacamba'] = dados_cadastrais[estacao]['cacambas'][cacamba]['volume_cacamba'] + descarte
-        if verificar_volume(estacao, cacamba) == 0:
+        if verificar_volume(estacao, cacamba) == 0: #Verificando se o volume é válido
             dados_cadastrais[estacao]['volume'] = dados_cadastrais[estacao]['volume'] - descarte
             dados_cadastrais[estacao]['cacambas'][cacamba]['volume_cacamba'] = dados_cadastrais[estacao]['cacambas'][cacamba]['volume_cacamba'] - descarte
-            print(f'Descarte de {descarte}kg não autorizado. Por favor, refaça o descarte.')
+            print(f'Descarte de {descarte}kg não autorizado. Volume excedido.')
             return  0
         dados_cadastrais[estacao]['cacambas'][cacamba]['temperatura'] = dados_cadastrais[estacao]['cacambas'][cacamba]['volume_cacamba'] * 40 / 100
         if (f'{data_hora.day}/{data_hora.month}') not in dados_cadastrais[estacao]['historico']:   #checando se dia já foi cadastrado no histórico
@@ -317,9 +321,10 @@ def main():
                     codigo = input("Código identificador: ")
                     bairro = input("Bairro correspondente: ")
                     volume = input("Volume de resíduos(kg): ")
+                    print('')
 
                     if cadastrar(estacao, codigo, bairro, volume) == 1:
-                        print("Estação cadastrada com sucesso!\n================")
+                        print("\nEstação cadastrada com sucesso!\n================")
                         break
                     if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
                         print("================")
@@ -340,6 +345,7 @@ def main():
                             verificar_todas_estacoes()
                         case "2":
                             estacao = input('Qual estação você quer verificar?\nR: ')
+                            print('')
 
                             if verificar_estacao_especifica(estacao) == 1:
                                 break
@@ -349,6 +355,7 @@ def main():
 
                         case "3":
                             estacao = input('Qual estação você quer verificar?\nR: ')
+                            print('')
 
                             if creditos_carbono(estacao) == 1:
                                 break
@@ -364,7 +371,8 @@ def main():
 
                                 case '1':
                                     estacao = input('Qual estação você quer verificar?\nR: ')
-                        
+                                    print('')
+
                                     if historico_ultimos_10(estacao) == 1:
                                         break
                                     if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
@@ -375,6 +383,8 @@ def main():
                                     estacao = input('Qual estação você quer verificar?\nR: ')
                                     mes = input('Qual mês você quer verificar?\nR: ')
                                     dia = input('Qual dia você quer verificar?\nR: ')
+                                    print('')
+
                                     if historico_dia(estacao, dia, mes) == 1:
                                         break
                                     if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
@@ -385,6 +395,8 @@ def main():
                                 case '3':
                                     estacao = input('Qual estação você quer verificar?\nR: ')
                                     mes = input('Qual mês você quer verificar?\nR: ')
+                                    print('')
+
                                     if historico_mes(estacao, mes) == 1:
                                         break
                                     if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
@@ -394,6 +406,7 @@ def main():
                         case "5":
                             print("Estações por índice de desempenho:")
                             resposta = input("Qual categoria você quer verificar?\n1.Regular\n2.Bom\n3.Muito bom\nR: ")
+                            print('')
     
                             if indicador_desempenho(resposta)==1:
                                     break
@@ -411,9 +424,10 @@ def main():
                     estacao = input("Em qual estação será feito o descarte?\nR:")
                     cacamba = input("Em qual caçamba será feito o descarte?\nR:")
                     descarte = input("Qual o peso do material descartado?\nR:")
+                    print('')
 
                     if fazer_descarte(estacao, cacamba, descarte) == 1:
-                        print("Descarte feito com sucesso!\n================")
+                        print("\nDescarte feito com sucesso!\n================")
                         break
                     if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
                         print("================")
@@ -432,6 +446,8 @@ def main():
                             break
                         case "1":
                             estacao = input('Qual estação você quer verificar?\nR: ')
+                            print('')
+
                             if historico_ultimos_10(estacao) == 1:
                                 break
                             if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
@@ -442,6 +458,7 @@ def main():
                             estacao = input('Qual estação você quer verificar?\nR: ')
                             dia = input('Em qual dia aconteceu o descarte?\nR: ')
                             mes = input('Em qual mes aconteceu o descarte?\nR: ')
+                            print('')
 
                             if historico_dia(estacao, dia, mes) == 1:
                                 break
@@ -451,6 +468,7 @@ def main():
                         case "3":
                             estacao = input('Qual estação você quer verificar?\nR: ')
                             mes = input('Em qual mês aconteceu o descarte?\nR: ')
+                            print('')
 
                             if historico_mes(estacao, mes) == 1:
                                 break
