@@ -18,4 +18,12 @@ de 76% a 100%= Ótimo
             print(f"Volume de descarte inválido.")
             return 0
 
+         if indicador >=0 and indicador <30:
+                    print(f"Desempenho da estação {estacao}: Regular")
+                elif indicador >30 and indicador <=60:
+                    print(f"Desempenho da estação {estacao}: Bom")
+                elif indicador >60 and indicador <= 90:
+                    print(f"Desempenho da estação {estacao}: Muito bom")
+                else:
+                    print(f"Volume de descarte inválido.")
 """

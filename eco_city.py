@@ -75,9 +75,8 @@ def verificar_todas_estacoes():
             print(f"    -Caçamba {j + 1}:")
             print(f"        .Capacidade máxima: {dados_cadastrais[i]['cacambas'][f'{j + 1}']['capacidade']}kg:")
             print(f"        .Volume atual: {dados_cadastrais[i]['cacambas'][f'{j + 1}']['volume_cacamba']}kg:")
-            print(f"        .Temperatura: {dados_cadastrais[i]['cacambas'][f'{j + 1}']['temperatura']}º\n:")
+            print(f"        .Temperatura: {dados_cadastrais[i]['cacambas'][f'{j + 1}']['temperatura']}º")
             verificar_volume(i, f'{j+1}')
-
     return 1
 
 def verificar_estacao_especifica(estacao:str):
@@ -92,7 +91,7 @@ def verificar_estacao_especifica(estacao:str):
             print(f"    -Caçamba {j + 1}:")
             print(f"        .Capacidade máxima: {dados_cadastrais[estacao]['cacambas'][f'{j + 1}']['capacidade']}kg:")
             print(f"        .Volume atual: {dados_cadastrais[estacao]['cacambas'][f'{j + 1}']['volume_cacamba']}kg:")
-            print(f"        .Temperatura: {dados_cadastrais[estacao]['cacambas'][f'{j + 1}']['temperatura']}º\n:")
+            print(f"        .Temperatura: {dados_cadastrais[estacao]['cacambas'][f'{j + 1}']['temperatura']}º:")
             verificar_volume(estacao, f'{j+1}')
     except KeyError:
         print("Estação inválida. Tente novamente.")
@@ -164,7 +163,7 @@ def fazer_descarte(estacao: str, cacamba:str, descarte:float):
 #Luiza
 
 def calcular_porcentagem(estacao:str, cacamba:str):
-   
+        
         capacidade = dados_cadastrais[estacao]['cacambas'][cacamba]['capacidade']
         volume_cacamba = dados_cadastrais[estacao]['cacambas'][cacamba]['volume_cacamba']
 
@@ -177,11 +176,13 @@ def verificar_volume(estacao:str, cacamba:str):
 
         porcentagem = calcular_porcentagem(estacao, cacamba)
 
-        if porcentagem >=0 and porcentagem <30:
+        if porcentagem == 0:
+            pass 
+        elif porcentagem >=1 and porcentagem <31:
             print(f"Volume de ocupação da caçamba {cacamba}: Baixo")
-        elif porcentagem >30 and porcentagem <=60:
+        elif porcentagem >=30 and porcentagem <61:
             print(f"Volume de ocupação da caçamba {cacamba}: Moderado")
-        elif porcentagem >60 and porcentagem <= 90:
+        elif porcentagem >=60 and porcentagem <91:
             print(f"Volume de ocupação da caçamba {cacamba}: Alto")
         else:
             print(f"Atenção: Volume da caçamba {cacamba} perigosamente alto.")
@@ -193,28 +194,50 @@ def verificar_volume(estacao:str, cacamba:str):
     
     return 1
 
-def indicador_desempenho(estacao:str):
-  
+def indicador_desempenho(desempenho:str): #Filtra estações por categoria de desempenho
     try: 
-        indicador = dados_cadastrais[estacao]['volume']
-                
-        if indicador >=0 and indicador <30:
-            print(f"Desempenho da estação {estacao}: Regular")
-        elif indicador >30 and indicador <=60:
-            print(f"Desempenho da estação {estacao}: Bom")
-        elif indicador >60 and indicador <= 90:
-            print(f"Desempenho da estação {estacao}: Muito bom")
-        else:
-            print(f"Volume de descarte inválido.")
-            return 0 
 
+        reg=[]
+        bom=[]
+        mt_bom=[]
+
+        for estacao in dados_cadastrais.keys():
+            indicador = dados_cadastrais[estacao]['volume']
+
+            if indicador >=0 and indicador <121:
+                reg.append(estacao)
+            elif indicador >=120 and indicador <241:
+                bom.append(estacao)
+            elif indicador >=241 and indicador <361:
+                mt_bom.append(estacao)
+
+        if desempenho == "1":
+            print(f"Regular: {reg}")
+        elif desempenho == "2":
+            print(f"Bom: {bom}")
+        elif desempenho == "3":
+            print(f"Muito bom: {mt_bom}")
+        else:
+            print("Categoria inválida!")
         
+        return 1
+
     except KeyError:
         print("Estação inválida! Tente novamente.")
         return 0 
-    
-    return 1
 
+def relatorio_porcentagem():
+
+    if len(dados_cadastrais) == 0:
+        print("Nenhuma estação cadastrada")
+
+    for i in dados_cadastrais.keys(): #i é a estação, j é a caçamba
+        print(f"{i}:")
+        for j in range(4):
+            porcentagem= calcular_porcentagem(i, f'{j+1}') #A porcentagem recebia estacao, cacamba e fazia o calculo uma vez só. AGr calcula de acordo com i e j
+            print(f"    - Porcentagem de ocupação da caçamba {j + 1}: {porcentagem:.1f}%")
+            verificar_volume(i, f'{j+1}')
+    return 1
 
 #====================
 
@@ -248,7 +271,7 @@ def main():
                     print("================")
                     print("Verificação de dados:")
 
-                    resposta = input("O que quer verificar?\n0. Sair\n1. Dados de todas as estações\n2. Dados de uma estação específica\n3. Créditos de carbono de uma estação\n4. Estações por índice de desempenho\nR: ") #Adicionei o filtro do índice -Malu
+                    resposta = input("O que quer verificar?\n0. Sair\n1. Dados de todas as estações\n2. Dados de uma estação específica\n3. Créditos de carbono de uma estação\n4. Estações por índice de desempenho\n5. Relatório de ocupação geral\nR: ") #Adicionei o filtro do índice -Malu
                     print("================")
 
                     match resposta:
@@ -264,6 +287,7 @@ def main():
                             if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
                                 print("================")
                                 break
+
                         case "3":
                             estacao = input('Qual estação você quer verificar?\nR: ')
 
@@ -272,9 +296,27 @@ def main():
                             if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
                                 print("================")
                                 break
-                        case "4": #Case 4 para filtro do índice -Malu
-                            indicador_desempenho(estacao) 
 
+                        case "4":
+                            print("Estações por índice de desempenho:")
+                            resposta = input("Qual categoria você quer verificar?\n1.Regular\n2.Bom\n3.Muito bom\nR: ")
+    
+                            match resposta:
+                                case "0":
+                                    break
+                                case "1":
+                                    if indicador_desempenho(resposta)==1:
+                                        break
+                                case "2":
+                                    if indicador_desempenho(resposta)==1:
+                                        break
+                                case "3":
+                                    if indicador_desempenho(resposta)==1:
+                                        break
+
+                        case "5":
+                            relatorio_porcentagem()
+                
             case "3":
                 while True:
                     print("================")
@@ -285,7 +327,7 @@ def main():
                     descarte = input("Qual o peso do material descartado?\nR:")
 
                     if fazer_descarte(estacao, cacamba, descarte) == 1:
-                        print("Estação cadastrada com sucesso!\n================")
+                        print("Descarte cadastrado com sucesso!\n================")
                         break
                     if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
                         print("================")
