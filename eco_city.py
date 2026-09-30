@@ -201,12 +201,14 @@ def fazer_descarte(estacao: str, cacamba:str, descarte:float):
 
     data_hora = datetime.datetime.now()
 
-    try: #Revisar a função verificar_volume no descarte
-        if verificar_volume(estacao, cacamba)==0:  #Verifica o volume de aacordo com a nova porcentagem
-            return  0
-        
+    try:
         dados_cadastrais[estacao]['volume'] = dados_cadastrais[estacao]['volume'] + descarte
         dados_cadastrais[estacao]['cacambas'][cacamba]['volume_cacamba'] = dados_cadastrais[estacao]['cacambas'][cacamba]['volume_cacamba'] + descarte
+        if verificar_volume(estacao, cacamba) == 0:
+            dados_cadastrais[estacao]['volume'] = dados_cadastrais[estacao]['volume'] - descarte
+            dados_cadastrais[estacao]['cacambas'][cacamba]['volume_cacamba'] = dados_cadastrais[estacao]['cacambas'][cacamba]['volume_cacamba'] - descarte
+            print(f'Descarte de {descarte}kg não autorizado. Por favor, refaça o descarte.')
+            return  0
         dados_cadastrais[estacao]['cacambas'][cacamba]['temperatura'] = dados_cadastrais[estacao]['cacambas'][cacamba]['volume_cacamba'] * 40 / 100
         if (f'{data_hora.day}/{data_hora.month}') not in dados_cadastrais[estacao]['historico']:   #checando se dia já foi cadastrado no histórico
             dados_cadastrais[estacao]['historico'][f'{data_hora.day}/{data_hora.month}'] = {}    #Se a checagem não for feita, o dicionário sempre vai sobrescrever
