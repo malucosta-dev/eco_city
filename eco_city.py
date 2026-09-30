@@ -99,9 +99,9 @@ def verificar_estacao_especifica(estacao:str):
 
 def creditos_carbono(estacao: str): #testar
     try:
-        if dados_cadastrais[estacao]['volume'] <= 250:
+        if dados_cadastrais[estacao]['volume'] <= 150:
             print(f'Desempenho ecológico da {estacao}: Baixo impacto')
-        elif dados_cadastrais[estacao]['volume'] > 250 and dados_cadastrais[estacao]['volume'] <= 360:
+        elif dados_cadastrais[estacao]['volume'] > 150 and dados_cadastrais[estacao]['volume'] <= 360:
             print(f'Desempenho ecológico da {estacao}: Sustentabilidade moderada')
         else:
             print(f'Desempenho ecológico da {estacao}: Polo verde avançado')
@@ -144,16 +144,17 @@ def historico_mes(estacao: str, mes:str): #Fazer case
         return 0
 
 
-    print(f"Histórico do mês da estação {estacao}")
+    print(f"Histórico do mês {mes} da estação {estacao}")
     for diames in dados_cadastrais[estacao]['historico'].keys():
 
         dia, mes_historico = diames.split("/")
 
         if mes_historico == mes:
             for hora, descarte in dados_cadastrais[estacao]['historico'][diames].items():
-                print(f"{hora[0:5]}: {descarte}")
+                print(f"Dia {dia} às {hora[0:5]}: {descarte}")
         else:
             print(f"Nenhum histórico para o mês {mes}.")
+            return 0
 
     return 1
 
@@ -327,7 +328,7 @@ def main():
                     print("================")
                     print("Verificação de dados:")
 
-                    resposta = input("O que quer verificar?\n0. Sair\n1. Dados de todas as estações\n2. Dados de uma estação específica\n3. Créditos de carbono de uma estação\n4. Histórico dos últimos 10 descartes\n5. Estações por índice de desempenho\n6. Relatório de ocupação geral\nR: ") #Adicionei o filtro do índice -Malu
+                    resposta = input("O que quer verificar?\n0. Sair\n1. Dados de todas as estações\n2. Dados de uma estação específica\n3. Créditos de carbono de uma estação\n4. Históricos\n5. Estações por índice de desempenho\n6. Relatório de ocupação geral\nR: ") #Adicionei o filtro do índice -Malu
                     print("================")
 
                     match resposta:
@@ -354,13 +355,40 @@ def main():
                                 break
 
                         case "4":
-                            estacao = input('Qual estação você quer verificar?\nR: ')
-                
-                            if historico_ultimos_10(estacao) == 1:
-                                break
-                            if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
-                                print("================")
-                                break
+                            resposta = input('Qual histórico você quer verificar?\n0. Sair\n1. Histórico dos últimos 10 descartes\n2. Histórico de um dia específico\n3. Histórico de um mês específico\nR: ')
+                            match resposta:
+                                case '0':
+                                    break
+
+                                case '1':
+                                    estacao = input('Qual estação você quer verificar?\nR: ')
+                        
+                                    if historico_ultimos_10(estacao) == 1:
+                                        break
+                                    if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
+                                        print("================")
+                                        break
+
+                                case '2':
+                                    estacao = input('Qual estação você quer verificar?\nR: ')
+                                    mes = input('Qual mês você quer verificar?\nR: ')
+                                    dia = input('Qual dia você quer verificar?\nR: ')
+                                    if historico_dia(estacao, dia, mes) == 1:
+                                        break
+                                    if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
+                                        print("================")
+                                        break
+                                    break
+
+                                case '3':
+                                    estacao = input('Qual estação você quer verificar?\nR: ')
+                                    mes = input('Qual mês você quer verificar?\nR: ')
+                                    if historico_mes(estacao, mes) == 1:
+                                        break
+                                    if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
+                                        print("================")
+                                        break
+                                
                         case "5":
                             print("Estações por índice de desempenho:")
                             resposta = input("Qual categoria você quer verificar?\n1.Regular\n2.Bom\n3.Muito bom\nR: ")
