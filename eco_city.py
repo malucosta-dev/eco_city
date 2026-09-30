@@ -43,7 +43,7 @@ def cadastrar(estacao: str, codigo: str, bairro: str, volume: float):
     if erro == 0:
         return 0
 
-    dados_cadastrais[estacao] = {} #Fiz uma função para a porcentagem, então removi o cálculo de dentro dos dados cadastrais -Malu
+    dados_cadastrais[estacao] = {} 
     dados_cadastrais[estacao]['codigo'] = codigo
     dados_cadastrais[estacao]['bairro'] = bairro
     dados_cadastrais[estacao]['volume'] = volume
@@ -121,7 +121,7 @@ def historico_mes():
 
 #====================
 #Lucas
-def fazer_descarte(estacao: str, cacamba:str, descarte:float):
+def fazer_descarte(estacao: str, cacamba:str, descarte:float): 
     try:
         descarte = float(descarte)
     except ValueError:
@@ -146,11 +146,13 @@ def fazer_descarte(estacao: str, cacamba:str, descarte:float):
 
     data_hora = datetime.datetime.now()
 
-    try:
+    try: #Revisar a função verificar_volume no descarte
+        if verificar_volume(estacao, cacamba)==0:  #Verifica o volume de aacordo com a nova porcentagem
+            return  0
+        
         dados_cadastrais[estacao]['volume'] = dados_cadastrais[estacao]['volume'] + descarte
         dados_cadastrais[estacao]['cacambas'][cacamba]['volume_cacamba'] = dados_cadastrais[estacao]['cacambas'][cacamba]['volume_cacamba'] + descarte
         dados_cadastrais[estacao]['cacambas'][cacamba]['temperatura'] = dados_cadastrais[estacao]['cacambas'][cacamba]['volume_cacamba'] * 40 / 100
-        verificar_volume(estacao, cacamba)  #Verifica o volume de aacordo com a nova porcentagem
         if (f'dia {data_hora.day}') not in dados_cadastrais[estacao]['historico']:   #checando se dia já foi cadastrado no histórico
             dados_cadastrais[estacao]['historico'][f'dia {data_hora.day}'] = {}    #Se a checagem não for feita, o dicionário sempre vai sobrescrever
         dados_cadastrais[estacao]['historico'][f'dia {data_hora.day}'][f'{data_hora.time()}'] = f'descartados {descarte}kg na caçamba {cacamba}'
@@ -301,19 +303,11 @@ def main():
                             print("Estações por índice de desempenho:")
                             resposta = input("Qual categoria você quer verificar?\n1.Regular\n2.Bom\n3.Muito bom\nR: ")
     
-                            match resposta:
-                                case "0":
+                            if indicador_desempenho(resposta)==1:
                                     break
-                                case "1":
-                                    if indicador_desempenho(resposta)==1:
-                                        break
-                                case "2":
-                                    if indicador_desempenho(resposta)==1:
-                                        break
-                                case "3":
-                                    if indicador_desempenho(resposta)==1:
-                                        break
-
+                            if input("Tentar novamente?\n1. Sim\n2. Não\nR: ") == "2":
+                                    print("================")
+                        
                         case "5":
                             relatorio_porcentagem()
                 
