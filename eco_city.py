@@ -1,7 +1,5 @@
 import datetime
-
-dados_cadastrais = {
-}
+from exemplo import dados_cadastrais
 
 def cadastrar(estacao: str, codigo: str, bairro: str, volume: float):
     erro = 1 #Sempre que acontecer um erro, a variável "erro" é alterada para True, permitindo que todas as mensagens de erro aconteçam
@@ -77,6 +75,7 @@ def verificar_todas_estacoes(): #Adicionar exemplos
             print(f"        .Temperatura: {dados_cadastrais[i]['cacambas'][f'{j + 1}']['temperatura']}º")
             {verificar_volume(i, f'{j+1}')}
             print("")
+        print("-----------")
     return 1
 
 def verificar_estacao_especifica(estacao:str):
@@ -300,6 +299,7 @@ def relatorio_porcentagem():
             porcentagem= calcular_porcentagem(i, f'{j+1}') #A porcentagem recebia estacao, cacamba e fazia o calculo uma vez só. AGr calcula de acordo com i e j
             print(f"    - Porcentagem de ocupação da caçamba {j + 1}: {porcentagem:.1f}%")
             verificar_volume(i, f'{j+1}')
+        print("\n-----------\n")
     return 1
 
 #====================
