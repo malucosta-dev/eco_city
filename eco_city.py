@@ -166,10 +166,19 @@ def historico_ultimos_10(estacao: str):
         print("Nenhum descarte feito")
         return 0
 
-    print(f"Histórico dos últimos 10 dias da estação {estacao}")
-    for dia in list(dados_cadastrais[estacao]['historico'].keys())[-10:]:
-        for hora, descarte in dados_cadastrais[estacao]['historico'][dia].items():
-            print(f"{dia}: {descarte} às {hora[0:5]}")
+    print(f"Histórico dos últimos 10 descartes da {estacao}:")
+    
+    registros = []
+
+    for dia, descartes in dados_cadastrais[estacao]['historico'].items():
+        for hora, descarte in descartes.items():
+            registros.append((dia, hora, descarte))
+
+    registros = registros[-10:]
+
+    for dia, hora, descarte in registros:
+        print(f"{dia}: {descarte} às {hora[0:5]}")
+    print("")
 
     return 1
 
